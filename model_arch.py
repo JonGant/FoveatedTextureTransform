@@ -7,7 +7,7 @@ from function import coral
 import numpy as np
 import math
 
-
+# Control VGG-11 Model
 class vgg11(nn.Module):
     def __init__(self, num_classes=20):
         super(vgg11, self).__init__()
@@ -44,11 +44,10 @@ class vgg11(nn.Module):
         return vector
 
 
+# Foveatex Texture Transform Class
 class vgg11_tex_fov(nn.Module):
     def __init__(self, scale, image_size, num_classes=20, permutation=None):
         super(vgg11_tex_fov, self).__init__()
-        # List of potentially different rate of growth of receptive fields
-        # assuming a center fixation.
         self.scale = scale
         self.perm = permutation
         self.num_classes = num_classes
@@ -126,7 +125,8 @@ class vgg11_tex_fov(nn.Module):
         vector = self.pad(self.pool(F.relu(self.conv3_2(vector))))
         vector = self.pad(F.relu(self.conv4_1(vector)))
         return vector
-
+    
+    # during forward pass, the foveated texture transform (AdaIN) is applied to feature vectors after convolutional layer 4_1 in foveated receptive fields.
     def forward(self, content):
         content_f = self.encoder(content)
         noise = torch.randn(len(content), 3, self.image_size, self.image_size)
@@ -171,7 +171,7 @@ class vgg11_tex_fov(nn.Module):
         vector = self.fc3(vector)
         return vector
 
-
+# modified version of the control VGG-11 which returns the flattened feature vector after convolutional layer 4_1
 class vgg11_modified(nn.Module):
     def __init__(self, num_classes=20):
         super(vgg11_modified, self).__init__()
@@ -195,7 +195,7 @@ class vgg11_modified(nn.Module):
         vector = torch.flatten(vector, 1)
         return vector
 
-
+# modified version of the Foveated Texture Transform which returns the flattened feature vector after the transform is applied to the output of convolutional layer 4_1
 class vgg11_tex_fov_modified(nn.Module):
     def __init__(self, scale, image_size, num_classes=20, permutation=None):
         super(vgg11_tex_fov_modified, self).__init__()
