@@ -44,7 +44,7 @@ class vgg11(nn.Module):
         return vector
 
 
-# Foveatex Texture Transform Class
+# Foveated Texture Transform Model
 class vgg11_tex_fov(nn.Module):
     def __init__(self, scale, image_size, num_classes=20, permutation=None):
         super(vgg11_tex_fov, self).__init__()
