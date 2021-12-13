@@ -9,8 +9,7 @@ Results of the transform are discussed in "Evaluating the Adversarial Robustness
 
 This code is free to use for Research Purposes, and if used/modified in any way please consider citing:
 
-'''
-
+```
 @inproceedings{
 gant2021ftt,
 title={Evaluating the Adversarial Robustness of a Foveated Texture Transform Module in a CNN},
@@ -19,7 +18,6 @@ booktitle={Shared Visual Representations in Human and Machine Intelligence},
 year={2021},
 url={https://openreview.net/forum?id=HyhSFQ1hOgV},
 }
-
-'''
+```
 
 Other inquiries: jongant@mit.edu
