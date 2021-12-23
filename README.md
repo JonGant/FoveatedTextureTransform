@@ -7,7 +7,7 @@ The FTT computes log-polar + localized Adaptive Instance Normalization (See Huan
 
 Results of the transform are discussed in "Evaluating the Adversarial Robustness of a Foveated Texture Transform Module in a CNN" by Gant et al. SVRHM @ NeruIPS 2021 (https://openreview.net/forum?id=HyhSFQ1hOgV).
 
-This code is free to use for Research Purposes, and if used/modified in any way please consider citing:
+This code is free to use for research purposes, and if used/modified in any way please consider citing:
 
 ```
 @inproceedings{
