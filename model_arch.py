@@ -11,8 +11,6 @@ import math
 class vgg11(nn.Module):
     def __init__(self, num_classes=20):
         super(vgg11, self).__init__()
-        # List of potentially different rate of growth of receptive fields
-        # assuming a center fixation.
         self.num_classes = num_classes
         self.pad = nn.ReflectionPad2d((1, 1, 1, 1))
         self.pool = nn.MaxPool2d((2, 2), (2, 2), (0, 0), ceil_mode=True)
@@ -55,6 +53,7 @@ class vgg11_tex_fov(nn.Module):
         self.image_size = image_size
         # define recpetive field scale parameters
         self.scale_in = ['0.25', '0.3', '0.4', '0.5', '0.6', '0.7']
+        # array of number of receptive fields for a given scale
         self.scale_out = [377, 301, 187, 126, 103, 91]
         self.Pooling_Region_Map = dict(zip(self.scale_in, self.scale_out))
         # load receptive fields
@@ -107,7 +106,8 @@ class vgg11_tex_fov(nn.Module):
         feat_std = feat_var.sqrt().view(N, C, 1, 1)
         feat_mean = feat.view(N, C, -1).mean(dim=2).view(N, C, 1, 1)
         return feat_mean, feat_std
-
+    
+    # this function applies a style transer function (adaptive instance normalization) to a content feature vector
     def adaptive_instance_normalization(self, content_feat, style_feat):
         assert (content_feat.size()[:2] == style_feat.size()[:2])
         size = content_feat.size()
@@ -117,7 +117,8 @@ class vgg11_tex_fov(nn.Module):
         normalized_feat = (content_feat - content_mean.expand(
             size)) / content_std.expand(size)
         return normalized_feat * style_std.expand(size) + style_mean.expand(size)
-
+    
+    # first part of a VGG-11 encoder
     def encoder(self, vector):
         vector = self.pad(self.pool(F.relu(self.conv1_1(vector))))
         vector = self.pad(self.pool(F.relu(self.conv2_1(vector))))
@@ -146,7 +147,7 @@ class vgg11_tex_fov(nn.Module):
             noise_f_mask = noise_f[:, :, mask_binary[:, :]]
             content_f_mask = content_f_mask.unsqueeze(3)
             noise_f_mask = noise_f_mask.unsqueeze(3)
-            # Perform the Crowding Operation and Localized Auto Style-Transfer
+            # Perform the Crowding Operation and Localized Style-Transfer
             texture_f_mask = self.adaptive_instance_normalization(noise_f_mask, content_f_mask)
             if self.perm == 'random':
                 diff_vec = texture_f_mask - content_f_mask
@@ -162,6 +163,7 @@ class vgg11_tex_fov(nn.Module):
             else:
                 alpha_mixture = (1 - alpha_i) * content_f_mask + alpha_i * texture_f_mask
             foveated_f[:, :, mask_binary[:, :]] = alpha_mixture.squeeze(3)
+        # apply the rest of the encoder to the stylized feature vector
         vector = self.pad(self.pool(F.relu(self.conv4_2(foveated_f))))
         vector = self.pad(F.relu(self.conv5_1(vector)))
         vector = self.pad(self.pool(F.relu(self.conv5_2(vector))))
@@ -175,8 +177,6 @@ class vgg11_tex_fov(nn.Module):
 class vgg11_modified(nn.Module):
     def __init__(self, num_classes=20):
         super(vgg11_modified, self).__init__()
-        # List of potentially different rate of growth of receptive fields
-        # assuming a center fixation.
         self.num_classes = num_classes
         self.pad = nn.ReflectionPad2d((1, 1, 1, 1))
         self.pool = nn.MaxPool2d((2, 2), (2, 2), (0, 0), ceil_mode=True)
@@ -208,6 +208,7 @@ class vgg11_tex_fov_modified(nn.Module):
         self.image_size = image_size
         # define recpetive field scale parameters
         self.scale_in = ['0.25', '0.3', '0.4', '0.5', '0.6', '0.7']
+        # array of number of receptive fields for a given scale
         self.scale_out = [377, 301, 187, 126, 103, 91]
         self.Pooling_Region_Map = dict(zip(self.scale_in, self.scale_out))
         # load receptive fields
@@ -255,6 +256,7 @@ class vgg11_tex_fov_modified(nn.Module):
         feat_mean = feat.view(N, C, -1).mean(dim=2).view(N, C, 1, 1)
         return feat_mean, feat_std
 
+    # this function applies a style transer function (adaptive instance normalization) to a content feature vector
     def adaptive_instance_normalization(self, content_feat, style_feat):
         assert (content_feat.size()[:2] == style_feat.size()[:2])
         size = content_feat.size()
@@ -264,7 +266,8 @@ class vgg11_tex_fov_modified(nn.Module):
         normalized_feat = (content_feat - content_mean.expand(
             size)) / content_std.expand(size)
         return normalized_feat * style_std.expand(size) + style_mean.expand(size)
-
+    
+    # first part of the VGG-11 encoder
     def encoder(self, vector):
         vector = self.pad(self.pool(F.relu(self.conv1_1(vector))))
         vector = self.pad(self.pool(F.relu(self.conv2_1(vector))))
@@ -292,7 +295,7 @@ class vgg11_tex_fov_modified(nn.Module):
             noise_f_mask = noise_f[:, :, mask_binary[:, :]]
             content_f_mask = content_f_mask.unsqueeze(3)
             noise_f_mask = noise_f_mask.unsqueeze(3)
-            # Perform the Crowding Operation and Localized Auto Style-Transfer
+            # Perform the Crowding Operation and Localized Style-Transfer
             texture_f_mask = self.adaptive_instance_normalization(noise_f_mask, content_f_mask)
             if self.perm == 'random':
                 diff_vec = texture_f_mask - content_f_mask
