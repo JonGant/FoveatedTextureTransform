@@ -37,7 +37,7 @@ def _mat_sqrt(x):
     U, D, V = torch.svd(x)
     return torch.mm(torch.mm(U, D.pow(0.5).diag()), V.t())
 
-
+# correllates and aligns the statistics of a source image with a target image
 def coral(source, target, gpu=True):
     # assume both source and target are 3D array (C, H, W)
     # Note: flatten -> f
