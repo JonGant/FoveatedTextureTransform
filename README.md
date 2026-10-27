@@ -20,4 +20,4 @@ url={https://openreview.net/forum?id=HyhSFQ1hOgV},
 }
 ```
 
-Other inquiries: jongant@mit.edu
+Other inquiries: jon.gant00@gmail.com
